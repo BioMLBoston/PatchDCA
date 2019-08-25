@@ -33,31 +33,6 @@ convertToNumericalMSAMOdifies=function(X)
   return (cov(NumericalX))
 }
 
-getModules=function(fileName,dockingfiles){
-  moduleDF=data.frame(model=NA,pdbID=NA,Chains=NA,residue1=1,residue2=1,distance=0,stringsAsFactors = F)
-  for(i in 1:length(dockingfiles)){
-    pdbObj=read.pdb(paste0("data/docking/",fileName,"/",dockingfiles[i]),multi=T)
-    pdbObj=pdbObj$atom
-    pdb1=pdbObj[pdbObj$type=="ATOM" & pdbObj$elety=="CA" & pdbObj$chain==substr(fileName,6,6),]
-    pdb2=pdbObj[pdbObj$type=="ATOM" & pdbObj$elety=="CA" & pdbObj$chain==substr(fileName,13,13),]
-    for(j in 1:nrow(pdb1)){
-      k=j+1
-      while(k<=nrow(pdb2)){
-        distance=getDistance(pdb1[j,],pdb2[k,])
-        if(distance<=12){
-          tmpDF=data.frame(model=dockingfiles[i],pdbID=substr(fileName,1,4),Chains=paste0(substr(fileName,6,6),"_",substr(fileName,13,13)),
-                           residue1=pdb1$resno[j],residue2=pdb2$resno[k],distance=distance,stringsAsFactors = F)
-          
-          moduleDF=rbind(moduleDF,tmpDF)
-        }
-        k=k+1
-      }
-    }
-  }
-  moduleDF=moduleDF[-1,]
-  write.table(moduleDF,file=paste0(fileName,".Voting"))
-}
-
 #calculte euclidean distance between every two residues within a protein as a matrix
 GetDistanceMatrix=function(pdbFile1,pdbFile2,P1Distance,P2Distance)
 {
@@ -136,6 +111,30 @@ getContacts=function(fileName,cutoff=12){
   
 }
 
+getModules=function(fileName,dockingfiles){
+  moduleDF=data.frame(model=NA,pdbID=NA,Chains=NA,residue1=1,residue2=1,distance=0,stringsAsFactors = F)
+  for(i in 1:length(dockingfiles)){
+    pdbObj=read.pdb(paste0("data/docking/",fileName,"/",dockingfiles[i]),multi=T)
+    pdbObj=pdbObj$atom
+    pdb1=pdbObj[pdbObj$type=="ATOM" & pdbObj$elety=="CA" & pdbObj$chain==substr(fileName,6,6),]
+    pdb2=pdbObj[pdbObj$type=="ATOM" & pdbObj$elety=="CA" & pdbObj$chain==substr(fileName,13,13),]
+    for(j in 1:nrow(pdb1)){
+      k=j+1
+      while(k<=nrow(pdb2)){
+        distance=getDistance(pdb1[j,],pdb2[k,])
+        if(distance<=12){
+          tmpDF=data.frame(model=dockingfiles[i],pdbID=substr(fileName,1,4),Chains=paste0(substr(fileName,6,6),"_",substr(fileName,13,13)),
+                           residue1=pdb1$resno[j],residue2=pdb2$resno[k],distance=distance,stringsAsFactors = F)
+          
+          moduleDF=rbind(moduleDF,tmpDF)
+        }
+        k=k+1
+      }
+    }
+  }
+  moduleDF=moduleDF[-1,]
+  write.table(moduleDF,file=paste0(fileName,".Voting"))
+}
 
 
 #convert prior matrix to list as
@@ -168,18 +167,14 @@ ConvertPenaltyMatrixToList=function( M,m,Chain1,Chain2,mapFile,InitialPenalty){
 
 
 GuassianFilterOnDocking=function(dockingFiles){
-  #setwd("data/docking/ContactMap/")
-  
+
   for(i in 1:length(dockingFiles)){
     
     dockingObj=read.table(file=dockingFiles[i],header = T,stringsAsFactors = F)
-    smoothObj=read.table(file=paste0("smooth/",dockingFiles[i],".smooth"),header = T,stringsAsFactors = F)
+    smoothObj=read.table(file=paste0("data/docking/smooth/",dockingFiles[i],".voting"),header = T,stringsAsFactors = F)
     m=mapply(dockingObj,FUN=as.numeric)
     m[is.na(m)]=0
    
-    smoothObj=read.table(file=paste0("smooth/",dockingFiles[i],".smooth2"),header = T,stringsAsFactors = F)
-    m=mapply(smoothObj,FUN=as.numeric)
-    m[is.na(m)]=0
     kernel=GaussianFilter()
     
     n=ncol(dockingObj)
@@ -200,10 +195,11 @@ GuassianFilterOnDocking=function(dockingFiles){
       smoothObj[j,1]=sum(dockingObj[(j-1):(j+1),1:2]*kernel[1:3,2:3])
       smoothObj[j,n]=sum(dockingObj[(j-1):(j+1),(n-1):(n)]*kernel[1:3,1:2])
     }
-    write.table(smoothObj,file=paste0("smooth/",dockingFiles[i],".smooth2"))
+    write.table(smoothObj,file=paste0("data/docking/smooth/",dockingFiles[i],".smooth2"))
     
   }
   
   
 }
+
 
