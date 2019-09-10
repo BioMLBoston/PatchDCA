@@ -1,8 +1,8 @@
 
 
 ##############################
-#MAIN:call the functions
-#############################
+#MAIN
+#######################
 
 library(Biostrings)
 library(glasso)
@@ -11,18 +11,26 @@ library(seqinr)
 library(corrplot)
 library(network)
 
+######################
+#read the Docking and Prior information from an input and build the penalty matrix. 
+#######################
+
 WorkDirectory="PatchDCA/"
+
 setwd(WorkDirectory)
+
 ###variables:
 #p1Name: first protein's PDB with chain ID: example 1CLL_A
 #p2Name: second protein's PDB with chain ID
-
-#map is matrix which maps every position from MSA to the residue ID from pdb file
+#map is matrix which maps every position from MSA to the residue ID from pdb file.
+#ComplexSet: Input protein files. See example/proteinsSettings.txt
 files=list.files(path="data/map/", pattern=".map")
 ComplexSet=read.table("ProteinSettings.txt",stringsAsFactors = F,header = T)
+
 # Read Amino Acid Propesnity Matrix( join probability)
 ContacPropensity=read.csv("data/Propensity", header = T,sep = " ")
 colnames(ContacPropensity)=rownames(ContacPropensity)=a(colnames(ContacPropensity))
+#For each row in number of input complexes, it builds one penalty matrix. The penlaty matrix of a complex is saved under data/penalty/ComplexName.penalty.
 for(z in 1:nrow(ComplexSet)){
   
   ComplexName=paste0(ComplexSet[i,],collapse = "_")
