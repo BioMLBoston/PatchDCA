@@ -1,4 +1,4 @@
-
+#Each Function is commented. Please see the main.R file for the workflow.
 #get distance between two atoms
 # pdb1 and pdb2 are two lines of pdb file which is an object of bio3d package
 getDistance=function(pdb1,pdb2){
