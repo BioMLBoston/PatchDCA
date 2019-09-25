@@ -30,6 +30,8 @@ ComplexSet=read.table("proteinsSettings.txt",stringsAsFactors = F,header = T)
 # Read Amino Acid Propesnity Matrix( join probability)
 ContacPropensity=read.csv("data/Propensity", header = T,sep = " ")
 colnames(ContacPropensity)=rownames(ContacPropensity)=a(colnames(ContacPropensity))
+ContacPropensity=ContacPropensity/(sum(ContacPropensity)/2)
+
 #For each row in number of input complexes, it builds one penalty matrix. The penlaty matrix of a complex is saved under data/penalty/ComplexName.penalty.
 for(z in 1:nrow(ComplexSet)){
   
