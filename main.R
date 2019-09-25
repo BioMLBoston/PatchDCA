@@ -33,7 +33,7 @@ colnames(ContacPropensity)=rownames(ContacPropensity)=a(colnames(ContacPropensit
 ContacPropensity=ContacPropensity/(sum(ContacPropensity)/2)
 
 #For each row in number of input complexes, it builds one penalty matrix. The penlaty matrix of a complex is saved under data/penalty/ComplexName.penalty.
-for(z in 1:nrow(ComplexSet)){
+for(i in 1:nrow(ComplexSet)){
   
   ComplexName=paste0(ComplexSet[i,],collapse = "_")
    
@@ -88,7 +88,8 @@ for(z in 1:nrow(ComplexSet)){
   }
   write.table(InitialPenalty2, file=paste0("data/docking/smooth/",ComplexName,".distance"))
   
-  smoothObj=read.table(file=paste0("data/docking/smooth/",ComplexName,"_8.tab",".smooth2"),header = T,stringsAsFactors = F)
+  ### read the smooth files
+  smoothObj=read.table(file=paste0("data/docking/smooth/",ComplexName,"_12.tab",".smooth2"),header = T,stringsAsFactors = F)
   InitialPenalty2=mapply(smoothObj,FUN=as.numeric)
   InitialPenalty2[is.na(InitialPenalty2)]=0
   InitialPenalty2=(InitialPenalty2)/sort(InitialPenalty2,decreasing = T)[3]
