@@ -25,7 +25,7 @@ setwd(WorkDirectory)
 #map is matrix which maps every position from MSA to the residue ID from pdb file.
 #ComplexSet: Input protein files. See example/proteinsSettings.txt
 files=list.files(path="data/map/", pattern=".map")
-ComplexSet=read.table("proteinsSettings.txt",stringsAsFactors = F,header = T)
+ComplexSet=read.table("data/proteinsSettings.txt",stringsAsFactors = F,header = T)
 
 # Read Amino Acid Propesnity Matrix( join probability)
 ContacPropensity=read.csv("data/Propensity", header = T,sep = " ")
