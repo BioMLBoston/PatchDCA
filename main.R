@@ -5,11 +5,8 @@
 #######################
 
 library(Biostrings)
-library(glasso)
 library(bio3d)
 library(seqinr)
-library(corrplot)
-library(network)
 
 ######################
 #read the Docking and Prior information from an input and build the penalty matrix. 
